@@ -1482,6 +1482,7 @@
         <a href="tel:0979356137">電話 0979-356-137</a>
         <a href="https://www.facebook.com/profile.php?id=61590525937737" target="_blank" rel="noopener">Facebook 粉專</a>
         <a href="https://www.instagram.com/dr.car__check" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.tiktok.com/@drcarcheck" target="_blank" rel="noopener">TikTok 抖音</a>
       </div>
       <div class="footer-col">
         <h4>資訊</h4>
@@ -1491,11 +1492,646 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Dr. Car Check ／ 查博士第三方驗車顧問</span>
+      <span id="dccSecretTrigger" style="cursor:default">© 2026 Dr. Car Check ／ 查博士第三方驗車顧問</span>
       <span>MADE IN TAIWAN ／ 桃園</span>
     </div>
   </div>
 </footer>
 
+
+<!-- ===================== 查博士鑑定工具（隱藏，需密碼解鎖） ===================== -->
+<script type="text/template" id="dccToolSource">
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>查博士鑑定工具 ｜ Dr. Car Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#16243d; --navy2:#22365c; --amber:#e8a11f; --amber-d:#b97714;
+  --paper:#ffffff; --ink:#1a2233; --line:#d8dde6; --mute:#66708a;
+  --bg:#eef0f4; --ok:#2e7d4f; --warn:#c03a36; --card:#ffffff;
+  --serif:"Noto Serif TC",serif; --sans:"Noto Sans TC",sans-serif; --mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;font-size:15px}
+
+/* ===================== APP (screen tool) ===================== */
+#app{max-width:760px;margin:0 auto;padding-bottom:96px}
+.brandbar{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.brandbar svg{flex-shrink:0}
+.brandbar .t1{font-family:var(--serif);font-weight:900;font-size:18px;letter-spacing:.04em}
+.brandbar .t2{font-family:var(--mono);font-size:10px;color:#9fb0d0;letter-spacing:.18em}
+.savedot{margin-left:auto;font-size:11px;color:#9fb0d0;font-family:var(--mono)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;background:var(--navy);position:sticky;top:58px;z-index:49;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;border:1px solid #3a4d75;color:#c8d4ea;background:transparent;border-radius:999px;padding:8px 16px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--sans)}
+.tab.on{background:var(--amber);border-color:var(--amber);color:var(--navy);font-weight:700}
+.sec{display:none;padding:16px}
+.sec.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h3{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.card h3::before{content:"";width:4px;height:16px;background:var(--amber);border-radius:2px}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:12.5px;color:var(--mute);margin-bottom:5px;font-weight:500}
+.f input[type=text],.f input[type=number],.f input[type=date],.f select,.f textarea{
+  width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:15px;font-family:var(--sans);background:#fff;color:var(--ink)}
+.f textarea{min-height:64px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:430px){.grid2{grid-template-columns:1fr}}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;font-size:14px;font-family:var(--sans);cursor:pointer;color:var(--ink);min-width:46px}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+.seg.gr button.on{background:var(--amber);border-color:var(--amber);color:var(--navy)}
+.struct-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.struct-row:last-child{border-bottom:none}
+.struct-row .nm{flex:1;font-size:13.5px}
+.struct-row .nm b{font-family:var(--mono);color:var(--mute);font-weight:400;font-size:11px;margin-right:6px}
+.sw{display:flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden}
+.sw button{border:none;background:#fff;padding:7px 13px;font-size:13px;cursor:pointer;font-family:var(--sans)}
+.sw button.no.on{background:var(--ok);color:#fff;font-weight:700}
+.sw button.yes.on{background:var(--warn);color:#fff;font-weight:700}
+.struct-note{width:100%;margin-top:6px;border:1px solid var(--warn);border-radius:8px;padding:8px 10px;font-size:13.5px;font-family:var(--sans)}
+.dlist{margin-top:8px}
+.drow{display:flex;align-items:flex-start;gap:8px;background:#f7f8fa;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.drow .no{font-family:var(--mono);font-weight:700;color:var(--amber-d);flex-shrink:0}
+.drow .dtl{flex:1;font-size:13.5px}
+.drow .dtl small{color:var(--mute)}
+.drow button{border:none;background:none;color:var(--warn);font-size:18px;cursor:pointer;padding:0 4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:13px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--sans)}
+.btn.amber{background:var(--amber);color:var(--navy)}
+.btn.navy{background:var(--navy);color:#fff}
+.btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn.full{width:100%}
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pslot{border:1.5px dashed var(--line);border-radius:12px;overflow:hidden;background:#fafbfc;position:relative}
+.pslot .cap{font-size:12px;font-weight:700;color:var(--navy);padding:8px 10px 4px}
+.pslot .box{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:12px;cursor:pointer;background-size:cover;background-position:center}
+.pslot.has{border-style:solid;border-color:var(--amber)}
+.pslot .rm{position:absolute;top:6px;right:6px;background:rgba(22,36,61,.85);color:#fff;border:none;border-radius:8px;font-size:11px;padding:4px 8px;cursor:pointer;display:none}
+.pslot.has .rm{display:block}
+.bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:60}
+.bottombar .btn{flex:1;padding:13px 10px}
+.hint{font-size:12px;color:var(--mute);margin-top:6px;line-height:1.5}
+
+/* ===================== REPORT (print) ===================== */
+#report{display:none}
+body.preview #app,body.preview .bottombar{display:none}
+body.preview #report{display:block;padding:20px 8px 110px}
+body.preview{background:#5a6172}
+.page{width:210mm;min-height:296mm;background:#fff;margin:0 auto 18px;padding:13mm 13mm 14mm;position:relative;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:11.5pt;color:var(--ink)}
+@media(max-width:830px){ body.preview #report{transform-origin:top left} }
+.pv-zoom{transform:scale(var(--z,1));transform-origin:top center}
+.printbar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:none;gap:10px;z-index:70}
+body.preview .printbar{display:flex}
+.printbar .btn{flex:1}
+
+/* report shared */
+.rp-band{background:var(--navy);height:10mm;margin:-13mm -13mm 0;display:flex;align-items:center;justify-content:flex-end;padding:0 8mm}
+.rp-band span{color:#9fb0d0;font-family:var(--mono);font-size:8pt;letter-spacing:.2em}
+.rp-band::before{content:"";position:absolute;left:0;right:0;top:10mm;height:1.2mm;background:var(--amber);}
+.rp-head{display:flex;align-items:center;gap:4mm;margin:7mm 0 5mm}
+.rp-head .ttl{font-family:var(--serif);font-weight:900;font-size:17pt;color:var(--navy)}
+.rp-head .sub{font-family:var(--mono);font-size:8pt;color:var(--mute);letter-spacing:.14em}
+.rp-head .cno{margin-left:auto;text-align:right;font-family:var(--mono);font-size:9pt;color:var(--navy)}
+.rp-head .cno b{color:var(--amber-d)}
+table.rt{width:100%;border-collapse:collapse;margin-bottom:4mm}
+table.rt th,table.rt td{border:1px solid #b9c2d0;padding:1.8mm 2.5mm;font-size:9.5pt;text-align:left;vertical-align:middle}
+table.rt th{background:#eef1f6;color:var(--navy);font-weight:700;width:26mm;white-space:nowrap}
+.rsec{font-weight:900;color:#fff;background:var(--navy);padding:1.6mm 3mm;font-size:10.5pt;margin:4mm 0 2.5mm;display:flex;align-items:center;gap:2mm}
+.rsec::before{content:"";width:1.6mm;height:4mm;background:var(--amber)}
+.gchip{display:inline-flex;align-items:center;justify-content:center;width:8.5mm;height:8.5mm;border-radius:50%;border:1.6px solid var(--navy);font-family:var(--mono);font-weight:700;font-size:11pt;color:var(--navy);position:relative}
+.gchip::after{content:"";position:absolute;right:-2.2mm;bottom:-1.2mm;width:2.6mm;height:1.1mm;background:var(--navy);border-radius:1mm;transform:rotate(45deg)}
+.gchip.big{width:16mm;height:16mm;font-size:20pt;border-width:2.5px;background:var(--amber);border-color:var(--amber-d);color:var(--navy)}
+.gchip.big::after{width:5mm;height:2mm;right:-4mm;bottom:-2mm;background:var(--amber-d)}
+.struct-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6mm}
+.sg-item{border:1px solid #b9c2d0;padding:1.5mm 2mm;font-size:8pt;min-height:11mm}
+.sg-item .n{font-family:var(--mono);color:var(--mute);font-size:7pt}
+.sg-item .v{font-weight:700;margin-top:.5mm}
+.sg-item .v.ok{color:var(--ok)} .sg-item .v.bad{color:var(--warn)}
+.rfoot{position:absolute;bottom:7mm;left:13mm;right:13mm;border-top:1px solid var(--line);padding-top:2mm;display:flex;justify-content:space-between;font-family:var(--mono);font-size:7.5pt;color:var(--mute)}
+.dot{fill:var(--amber);stroke:var(--navy);stroke-width:1.5}
+.dotn{font:700 11px var(--mono);fill:var(--navy)}
+td.dmgtype{color:var(--warn);font-weight:700}
+.legend tr td:first-child{width:18mm;text-align:center;font-family:var(--mono);font-weight:700}
+.notice li{font-size:9pt;margin-bottom:1.6mm;line-height:1.6;padding-left:4mm;position:relative;list-style:none}
+.notice li::before{content:"◇";position:absolute;left:0;color:var(--amber-d)}
+.sigbox{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #b9c2d0;margin-top:4mm}
+.sigbox>div{padding:3mm;border-right:1px solid #b9c2d0;min-height:24mm;font-size:9pt}
+.sigbox>div:last-child{border-right:none}
+.sigbox b{display:block;color:var(--navy);margin-bottom:3mm}
+/* cover */
+.cover{display:flex;flex-direction:column;align-items:center;text-align:center}
+.cover .band2{background:var(--navy);height:14mm;width:calc(100% + 26mm);margin:-13mm -13mm 0;position:relative}
+.cover .band2::after{content:"";position:absolute;left:0;right:0;bottom:-1.4mm;height:1.4mm;background:var(--amber)}
+.cover .logo{margin:22mm 0 8mm}
+.cover h1{font-family:var(--serif);font-weight:900;font-size:34pt;color:var(--navy);letter-spacing:.06em}
+.cover h2{font-family:var(--serif);font-weight:700;font-size:15pt;color:var(--ink);margin-top:4mm;letter-spacing:.3em}
+.cover .en{font-family:var(--mono);font-size:9.5pt;color:var(--mute);letter-spacing:.22em;margin-top:3mm}
+.cover .brandline{margin-top:10mm;font-size:10.5pt;color:var(--navy);font-weight:700;letter-spacing:.1em}
+.cover .meta{margin-top:14mm;border:1px solid #b9c2d0;width:120mm}
+.cover .meta div{display:flex;border-bottom:1px solid #b9c2d0}
+.cover .meta div:last-child{border-bottom:none}
+.cover .meta span{padding:2.5mm 4mm;font-size:10pt}
+.cover .meta span:first-child{width:34mm;background:#eef1f6;font-weight:700;color:var(--navy)}
+.cover .contact{margin-top:auto;font-family:var(--mono);font-size:8.5pt;color:var(--mute);line-height:1.9}
+
+@media print{
+  body{background:#fff}
+  #app,.bottombar,.printbar{display:none!important}
+  #report{display:block!important;padding:0}
+  body.preview #report{padding:0}
+  .page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden;padding:12mm 13mm;page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid}
+  .page:last-child{page-break-after:auto;break-after:auto}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= APP ======================= -->
+<div id="app">
+  <div class="brandbar">
+    <svg width="34" height="34" viewBox="0 0 100 100"><circle cx="44" cy="42" r="30" fill="none" stroke="#fff" stroke-width="6"/><rect x="66" y="62" width="26" height="11" rx="5" transform="rotate(45 66 62)" fill="#fff"/><path d="M26 50 q2 -10 10 -12 l5 -7 q3 -4 9 -4 h8 q6 0 9 4 l4 6 q8 2 9 13 l-1 4 h-6 a6 6 0 0 0 -12 0 h-16 a6 6 0 0 0 -12 0 h-6 z" fill="none" stroke="#e8a11f" stroke-width="4.5" stroke-linejoin="round"/></svg>
+    <div><div class="t1">查博士鑑定工具</div><div class="t2">DR. CAR CHECK</div></div>
+    <span class="savedot" id="saveDot">已自動儲存</span>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-s="s1">基本資料</button>
+    <button class="tab" data-s="s2">總結評級</button>
+    <button class="tab" data-s="s3">車體結構</button>
+    <button class="tab" data-s="s4">缺失紀錄</button>
+    <button class="tab" data-s="s5">照片</button>
+    <button class="tab" data-s="s6">輸出</button>
+  </div>
+
+  <!-- s1 基本資料 -->
+  <section class="sec on" id="s1">
+    <div class="card"><h3>鑑定資訊</h3>
+      <div class="grid2">
+        <div class="f"><label>報告編號</label><input type="text" id="caseNo" placeholder="DCC-20260601-01"></div>
+        <div class="f"><label>檢查日期</label><input type="date" id="date"></div>
+        <div class="f"><label>檢查人員</label><input type="text" id="inspector" placeholder="姓名"></div>
+        <div class="f"><label>看車地點</label><input type="text" id="location" placeholder="縣市／車行"></div>
+        <div class="f"><label>委託人</label><input type="text" id="client" placeholder="客戶姓名"></div>
+        <div class="f"><label>出售單位（選填）</label><input type="text" id="dealer" placeholder="車行名稱"></div>
+      </div>
+    </div>
+    <div class="card"><h3>車輛資料</h3>
+      <div class="grid2">
+        <div class="f"><label>廠牌</label><input type="text" id="make" placeholder="BMW"></div>
+        <div class="f"><label>型號</label><input type="text" id="model" placeholder="3 Series 330"></div>
+        <div class="f"><label>出廠年份</label><input type="text" id="year" placeholder="2019"></div>
+        <div class="f"><label>顏色</label><input type="text" id="color" placeholder="白"></div>
+        <div class="f"><label>車身號碼 VIN</label><input type="text" id="vin" placeholder="可部分遮蔽"></div>
+        <div class="f"><label>儀表里程 km</label><input type="number" id="mileage" placeholder="60927"></div>
+      </div>
+      <p class="hint">VIN 與車牌屬個資，輸出給客人以外的人前請自行遮蔽。</p>
+    </div>
+  </section>
+
+  <!-- s2 總結評級 -->
+  <section class="sec" id="s2">
+    <div class="card"><h3>總結報告</h3>
+      <div class="f"><label>修復歷史（骨架受擊痕跡）</label><div class="seg" id="segRepair"></div></div>
+      <div class="f"><label>外觀鈑件更換</label><div class="seg" id="segPanel"></div></div>
+      <div class="f"><label>機能件（靜態發動評估）</label><div class="seg" id="segMachine"></div></div>
+      <div class="f"><label>泡水跡象</label><div class="seg" id="segFlood"></div></div>
+      <div class="grid2">
+        <div class="f"><label>電瓶電壓 (V)</label><input type="text" id="battery" placeholder="13.0"></div>
+        <div class="f"><label>冷氣出風溫度 (°C)</label><input type="text" id="acTemp" placeholder="6"></div>
+      </div>
+    </div>
+    <div class="card"><h3>評級（S／A／B／C／D）</h3>
+      <div class="f"><label>外觀表現</label><div class="seg gr" id="segExt"></div></div>
+      <div class="f"><label>內裝表現</label><div class="seg gr" id="segInt"></div></div>
+      <div class="f"><label>綜合評級</label><div class="seg gr" id="segOverall"></div></div>
+      <div class="f"><label>總評備註（一兩句即可）</label><textarea id="summaryNote" placeholder="例：整體車況與年份里程相符，後尾板有凹痕修復紀錄。"></textarea></div>
+    </div>
+  </section>
+
+  <!-- s3 結構 -->
+  <section class="sec" id="s3">
+    <div class="card"><h3>車體結構 20 點檢查</h3>
+      <p class="hint" style="margin:0 0 8px">預設「無」異常；發現痕跡點「有」並簡記。</p>
+      <div id="structList"></div>
+    </div>
+  </section>
+
+  <!-- s4 缺失 -->
+  <section class="sec" id="s4">
+    <div class="card"><h3>新增缺失</h3>
+      <div class="grid2">
+        <div class="f"><label>部位</label><select id="dZone"></select></div>
+        <div class="f"><label>狀況</label><select id="dType">
+          <option>刮傷</option><option>凹痕</option><option>烤漆痕跡</option><option>板金痕跡</option><option>鏽蝕</option><option>龜裂</option><option>磨傷</option><option>破損</option><option>異音</option><option>滲漏</option><option>功能異常</option><option>其他</option>
+        </select></div>
+        <div class="f"><label>程度</label><select id="dSev">
+          <option>極小</option><option>小</option><option>中</option><option>大</option>
+        </select></div>
+        <div class="f"><label>備註（選填）</label><input type="text" id="dNote" placeholder=""></div>
+      </div>
+      <button class="btn amber full" id="dAdd">＋ 加入缺失</button>
+    </div>
+    <div class="card"><h3>已記錄 <span id="dCount" style="color:var(--amber-d)"></span></h3>
+      <div class="dlist" id="dList"><p class="hint">尚無紀錄。</p></div>
+    </div>
+  </section>
+
+  <!-- s5 照片 -->
+  <section class="sec" id="s5">
+    <div class="card"><h3>照片紀錄（點格子拍照或選圖）</h3>
+      <div class="photo-grid" id="photoGrid"></div>
+      <p class="hint">照片會自動壓縮。車牌與 VIN 請於拍攝時避開，或事後自行處理。</p>
+    </div>
+  </section>
+
+  <!-- s6 輸出 -->
+  <section class="sec" id="s6">
+    <div class="card"><h3>輸出與備份</h3>
+      <button class="btn navy full" id="btnPreview" style="margin-bottom:10px">📄 預覽報告（可列印／存 PDF）</button>
+      <button class="btn ghost full" id="btnExport" style="margin-bottom:10px">⬇ 匯出紀錄檔（JSON 備份）</button>
+      <button class="btn ghost full" id="btnImport" style="margin-bottom:10px">⬆ 匯入紀錄檔</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <button class="btn ghost full" id="btnClear" style="color:var(--warn)">🗑 清除全部重填</button>
+      <p class="hint">手機存 PDF：預覽 → 列印 → 目的地選「儲存為 PDF」。換手機前請先匯出 JSON 備份。</p>
+    </div>
+  </section>
+</div>
+
+<div class="bottombar">
+  <button class="btn ghost" id="bbBack">◀ 上一區</button>
+  <button class="btn amber" id="bbNext">下一區 ▶</button>
+</div>
+
+<div class="printbar">
+  <button class="btn ghost" id="pvBack">◀ 返回編輯</button>
+  <button class="btn amber" id="pvPrint">🖨 列印／存 PDF</button>
+</div>
+
+<!-- ======================= REPORT ======================= -->
+<div id="report"></div>
+
+<script>
+/* ---------- constants ---------- */
+const GRADES=["S","A","B","C","D"];
+const STRUCT=["後底板&底橫樑","左/右後葉子板(內)","左/右側C(D)柱","車頂/內支架","左/右側戶定","左/右後大樑","左/右輪緣","左/右側B柱","防火牆","後尾板","右前大樑","底盤/前底盤","下水箱支架","上水箱支架","左前大樑","避震器座","左/右側A柱","左/右前內龜板","左/右劍尾","左/右側側樑"];
+const PHOTO_SLOTS=["車頭","車身號碼","儀錶板","車身號碼貼紙","電瓶電壓","冷氣溫度","引擎室","車尾"];
+const ZONES={ // exterior coords on 360x660 top view; null = no dot
+ "前保桿":[180,38],"引擎蓋":[180,108],"前擋玻璃":[180,180],"車頂":[180,305],"後擋玻璃":[180,430],"行李箱蓋":[180,505],"後保桿":[180,612],
+ "左前葉子板":[62,115],"右前葉子板":[298,115],"左前門":[58,255],"右前門":[302,255],"左後門":[58,365],"右後門":[302,365],
+ "左後葉子板":[62,490],"右後葉子板":[298,490],"左側裙":[40,310],"右側裙":[320,310],
+ "左前輪":[26,150],"右前輪":[334,150],"左後輪":[26,470],"右後輪":[334,470],
+ "左後視鏡":[72,205],"右後視鏡":[288,205],"左側玻璃":[88,300],"右側玻璃":[272,300],
+ "方向盤":null,"儀表板":null,"中控台":null,"駕駛座":null,"副駕駛座":null,"後座":null,"天篷":null,"門板內飾":null,"行李廂內":null,"引擎室":null,"底盤下方":null,"其他":null };
+
+/* ---------- state ---------- */
+function fresh(){return{
+ meta:{caseNo:"",date:new Date().toISOString().slice(0,10),inspector:"",location:"",client:"",dealer:""},
+ vehicle:{make:"",model:"",year:"",color:"",vin:"",mileage:""},
+ summary:{repair:"無",panel:"無",machine:"正常",flood:"無",battery:"",acTemp:"",ext:"A",int:"A",overall:"A",note:""},
+ structure:STRUCT.map(()=>({v:"無",note:""})),
+ defects:[],photos:{}}}
+let S=fresh();
+function save(){try{localStorage.setItem("dcc_record",JSON.stringify(S));sd("已自動儲存")}catch(e){sd("⚠ 容量滿，請匯出JSON")}}
+function load(){try{const r=localStorage.getItem("dcc_record");if(r){S=Object.assign(fresh(),JSON.parse(r));S.structure=S.structure&&S.structure.length===20?S.structure:fresh().structure}}catch(e){}}
+function sd(t){const el=document.getElementById("saveDot");el.textContent=t}
+
+/* ---------- tabs ---------- */
+const SECS=["s1","s2","s3","s4","s5","s6"];let cur=0;
+function showSec(i){cur=i;document.querySelectorAll(".sec").forEach((s,j)=>s.classList.toggle("on",j===i));
+ document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("on",j===i));window.scrollTo(0,0)}
+document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(b)showSec(SECS.indexOf(b.dataset.s))});
+document.getElementById("bbBack").onclick=()=>showSec(Math.max(0,cur-1));
+document.getElementById("bbNext").onclick=()=>showSec(Math.min(5,cur+1));
+
+/* ---------- text inputs ---------- */
+const MAP={caseNo:["meta","caseNo"],date:["meta","date"],inspector:["meta","inspector"],location:["meta","location"],client:["meta","client"],dealer:["meta","dealer"],
+ make:["vehicle","make"],model:["vehicle","model"],year:["vehicle","year"],color:["vehicle","color"],vin:["vehicle","vin"],mileage:["vehicle","mileage"],
+ battery:["summary","battery"],acTemp:["summary","acTemp"],summaryNote:["summary","note"]};
+function bindInputs(){for(const id in MAP){const el=document.getElementById(id);const[a,b]=MAP[id];
+ el.value=S[a][b]||"";el.addEventListener("input",()=>{S[a][b]=el.value;save()})}}
+
+/* ---------- segmented ---------- */
+function seg(id,opts,get,set){const c=document.getElementById(id);c.innerHTML="";
+ opts.forEach(o=>{const b=document.createElement("button");b.textContent=o;b.type="button";
+  if(get()===o)b.classList.add("on");
+  b.onclick=()=>{set(o);[...c.children].forEach(x=>x.classList.toggle("on",x.textContent===o));save()};
+  c.appendChild(b)})}
+function buildSegs(){
+ seg("segRepair",["無","輕度","中度","重度"],()=>S.summary.repair,v=>S.summary.repair=v);
+ seg("segPanel",["無","有"],()=>S.summary.panel,v=>S.summary.panel=v);
+ seg("segMachine",["正常","需留意"],()=>S.summary.machine,v=>S.summary.machine=v);
+ seg("segFlood",["無","有疑慮"],()=>S.summary.flood,v=>S.summary.flood=v);
+ seg("segExt",GRADES,()=>S.summary.ext,v=>S.summary.ext=v);
+ seg("segInt",GRADES,()=>S.summary.int,v=>S.summary.int=v);
+ seg("segOverall",GRADES,()=>S.summary.overall,v=>S.summary.overall=v);
+}
+
+/* ---------- structure ---------- */
+function buildStruct(){const w=document.getElementById("structList");w.innerHTML="";
+ STRUCT.forEach((nm,i)=>{const row=document.createElement("div");row.className="struct-row";row.style.flexWrap="wrap";
+  row.innerHTML=`<div class="nm"><b>${String(i+1).padStart(2,"0")}</b>${nm}</div>
+   <div class="sw"><button type="button" class="no">無</button><button type="button" class="yes">有</button></div>`;
+  const inp=document.createElement("input");inp.className="struct-note";inp.placeholder="痕跡說明";inp.value=S.structure[i].note;
+  inp.style.display=S.structure[i].v==="有"?"block":"none";
+  inp.addEventListener("input",()=>{S.structure[i].note=inp.value;save()});
+  const[bn,by]=row.querySelectorAll("button");
+  function paint(){bn.classList.toggle("on",S.structure[i].v==="無");by.classList.toggle("on",S.structure[i].v==="有");inp.style.display=S.structure[i].v==="有"?"block":"none"}
+  bn.onclick=()=>{S.structure[i].v="無";paint();save()};by.onclick=()=>{S.structure[i].v="有";paint();save()};
+  paint();row.appendChild(inp);w.appendChild(row)})}
+
+/* ---------- defects ---------- */
+function buildZoneSelect(){const sel=document.getElementById("dZone");sel.innerHTML="";
+ const ext=Object.keys(ZONES).filter(z=>ZONES[z]);const oth=Object.keys(ZONES).filter(z=>!ZONES[z]);
+ const g1=document.createElement("optgroup");g1.label="外觀";ext.forEach(z=>g1.appendChild(new Option(z)));
+ const g2=document.createElement("optgroup");g2.label="內裝／機件／其他";oth.forEach(z=>g2.appendChild(new Option(z)));
+ sel.append(g1,g2)}
+function paintDefects(){const w=document.getElementById("dList");document.getElementById("dCount").textContent=S.defects.length?`（${S.defects.length} 筆）`:"";
+ if(!S.defects.length){w.innerHTML='<p class="hint">尚無紀錄。</p>';return}
+ w.innerHTML="";S.defects.forEach((d,i)=>{const r=document.createElement("div");r.className="drow";
+  r.innerHTML=`<span class="no">${String(i+1).padStart(2,"0")}</span>
+   <div class="dtl"><b>${d.zone}</b>　${d.type}・${d.sev}${d.note?`<br><small>${d.note}</small>`:""}</div>`;
+  const x=document.createElement("button");x.textContent="✕";x.onclick=()=>{S.defects.splice(i,1);paintDefects();save()};
+  r.appendChild(x);w.appendChild(r)})}
+document.getElementById("dAdd").onclick=()=>{
+ S.defects.push({zone:dZone.value,type:dType.value,sev:dSev.value,note:dNote.value.trim()});
+ dNote.value="";paintDefects();save()};
+
+/* ---------- photos ---------- */
+function renderSlot(slot,box,rm,i,cap){
+  if(S.photos[i]){slot.classList.add("has");box.style.backgroundImage=`url(${S.photos[i]})`;box.textContent="";rm.style.display="block"}
+  else{slot.classList.remove("has");box.style.backgroundImage="";box.textContent="＋ 拍照／選圖";rm.style.display="none"}
+}
+function buildPhotos(){const g=document.getElementById("photoGrid");g.innerHTML="";
+ PHOTO_SLOTS.forEach((cap,i)=>{const slot=document.createElement("div");slot.className="pslot";
+  slot.innerHTML=`<div class="cap">${i+1}. ${cap}</div>`;
+  const box=document.createElement("div");box.className="box";
+  const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.style.display="none";
+  const rm=document.createElement("button");rm.className="rm";rm.textContent="移除";
+  box.onclick=()=>inp.click();
+  inp.onchange=()=>{const f=inp.files&&inp.files[0];if(!f)return;
+    box.textContent="處理中…";box.style.backgroundImage="";
+    const reader=new FileReader();
+    reader.onerror=()=>{box.textContent="讀取失敗，再試一次";};
+    reader.onload=()=>{const img=new Image();
+      img.onerror=()=>{box.textContent="圖片格式不支援";};
+      img.onload=()=>{try{
+        const c=document.createElement("canvas");const M=1100;let w0=img.naturalWidth||img.width,h0=img.naturalHeight||img.height;
+        if(!w0||!h0){box.textContent="圖片讀取異常";return}
+        if(w0>M){h0=Math.round(h0*M/w0);w0=M}
+        c.width=w0;c.height=h0;c.getContext("2d").drawImage(img,0,0,w0,h0);
+        const data=c.toDataURL("image/jpeg",.72);
+        S.photos[i]=data;renderSlot(slot,box,rm,i,cap);
+        try{save()}catch(e){alert("照片較多，手機儲存空間已滿。建議先到『輸出』匯出報告或JSON備份。")}
+        inp.value="";
+      }catch(err){box.textContent="處理失敗，請重試"}};
+      img.src=reader.result; // data URL — iOS reliable
+    };
+    reader.readAsDataURL(f);
+  };
+  rm.onclick=e=>{e.stopPropagation();delete S.photos[i];renderSlot(slot,box,rm,i,cap);save()};
+  slot.append(box,inp,rm);renderSlot(slot,box,rm,i,cap);g.appendChild(slot)})}
+
+/* ---------- export / import / clear ---------- */
+document.getElementById("btnExport").onclick=()=>{
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:"application/json"}));
+ a.download=`查博士紀錄-${S.meta.caseNo||"未編號"}.json`;a.click()};
+document.getElementById("btnImport").onclick=()=>importFile.click();
+document.getElementById("importFile").onchange=()=>{const f=importFile.files[0];if(!f)return;
+ const r=new FileReader();r.onload=()=>{try{S=Object.assign(fresh(),JSON.parse(r.result));refreshAll();save();alert("匯入完成")}catch(e){alert("檔案格式錯誤")}};r.readAsText(f)};
+document.getElementById("btnClear").onclick=()=>{if(confirm("確定清除全部資料？建議先匯出JSON備份。")){S=fresh();refreshAll();save()}};
+
+/* ---------- report render ---------- */
+const C={line:"https://lin.ee/NIq2ZG5",tel:"0979-356-137",web:"dr-car-check.tw"};
+/* 防偽：每份報告產生唯一驗證碼，並請收件人以官方LINE回傳核對 */
+function vcode(){const m=(S.meta.caseNo||"")+"|"+(S.vehicle.vin||"")+"|"+(S.meta.date||"");let h=5381;for(let i=0;i<m.length;i++){h=((h<<5)+h+m.charCodeAt(i))>>>0;}return ("DCV-"+h.toString(36).toUpperCase()).slice(0,12);}
+function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function logoSVG(size,navy,amber){return`<svg width="${size}" height="${size}" viewBox="0 0 100 100"><circle cx="44" cy="42" r="30" fill="none" stroke="${navy}" stroke-width="6"/><rect x="66" y="62" width="26" height="11" rx="5" transform="rotate(45 66 62)" fill="${navy}"/><path d="M26 50 q2 -10 10 -12 l5 -7 q3 -4 9 -4 h8 q6 0 9 4 l4 6 q8 2 9 13 l-1 4 h-6 a6 6 0 0 0 -12 0 h-16 a6 6 0 0 0 -12 0 h-6 z" fill="none" stroke="${amber}" stroke-width="4.5" stroke-linejoin="round"/></svg>`}
+function chip(g){return`<span class="gchip">${esc(g)}</span>`}
+function carTopSVG(){
+ let dots="";const used={};
+ S.defects.forEach((d,i)=>{const c=ZONES[d.zone];if(!c)return;const k=d.zone;used[k]=(used[k]||0);
+  const dx=(used[k]%3)*16-((used[k]%3)?0:0), dy=Math.floor(used[k]/3)*16;used[k]++;
+  dots+=`<circle class="dot" cx="${c[0]+dx}" cy="${c[1]+dy}" r="9"/><text class="dotn" x="${c[0]+dx}" y="${c[1]+dy+4}" text-anchor="middle">${i+1}</text>`});
+ return `<svg viewBox="0 0 360 660" style="width:62mm;display:block;margin:0 auto">
+  <g fill="none" stroke="#22365c" stroke-width="2.5" stroke-linejoin="round">
+   <rect x="22" y="118" width="14" height="64" rx="6"/><rect x="324" y="118" width="14" height="64" rx="6"/>
+   <rect x="22" y="438" width="14" height="64" rx="6"/><rect x="324" y="438" width="14" height="64" rx="6"/>
+   <path d="M120 28 h120 q44 0 50 40 l8 60 q4 30 4 90 v220 q0 64 -4 96 l-6 56 q-6 42 -52 42 h-120 q-46 0 -52 -42 l-6 -56 q-4 -32 -4 -96 v-220 q0 -60 4 -90 l8 -60 q6 -40 50 -40 z"/>
+   <path d="M92 150 q88 -18 176 0 l-12 62 q-76 -14 -152 0 z"/>
+   <rect x="104" y="226" width="152" height="180" rx="10"/>
+   <path d="M100 446 q80 14 160 0 l8 50 q-88 16 -176 0 z"/>
+   <line x1="60" y1="200" x2="60" y2="430"/><line x1="300" y1="200" x2="300" y2="430"/>
+   <path d="M66 196 l-18 -10 m246 10 l18 -10"/>
+  </g><g>${dots}</g></svg>`}
+function renderReport(){
+ const m=S.meta,v=S.vehicle,sm=S.summary;
+ const structHas=S.structure.some(s=>s.v==="有");
+ const pages=[];
+
+ /* P1 cover */
+ pages.push(`<div class="page cover">
+   <div class="band2"></div>
+   <div class="logo">${logoSVG(120,"#16243d","#e8a11f")}</div>
+   <h1>查博士鑑定</h1>
+   <h2>中古車第三方車況鑑定報告</h2>
+   <div class="en">DR. CAR CHECK — VEHICLE INSPECTION REPORT</div>
+   <div class="brandline">同業出身 ・ 買方立場 ・ 不抽車商佣金</div>
+   <div class="meta">
+     <div><span>報告編號</span><span>${esc(m.caseNo)||"—"}</span></div>
+     <div><span>檢查日期</span><span>${esc(m.date)||"—"}</span></div>
+     <div><span>受檢車輛</span><span>${esc(v.make)} ${esc(v.model)}</span></div>
+   </div>
+   <div class="contact">LINE ${C.line}　｜　TEL ${C.tel}　｜　${C.web}<br>本報告為檢查當時現況之客觀紀錄，非保固、非保證，詳閱末頁聲明。<br>防偽驗證碼 <b>${vcode()}</b>　（如有疑慮，請以官方LINE回傳此碼核對真偽）</div>
+ </div>`);
+
+ /* P2 main certificate */
+ const structCells=S.structure.map((s,i)=>`<div class="sg-item"><div class="n">${String(i+1).padStart(2,"0")} ${esc(STRUCT[i])}</div>
+   <div class="v ${s.v==="有"?"bad":"ok"}">${s.v==="有"?("有"+(s.note?"・"+esc(s.note):"")) :"無"}</div></div>`).join("");
+ pages.push(`<div class="page">
+   <div class="rp-band"><span>DR. CAR CHECK</span></div>
+   <div class="rp-head">${logoSVG(34,"#16243d","#e8a11f")}
+     <div><div class="ttl">查博士車況鑑定証</div><div class="sub">VEHICLE INSPECTION CERTIFICATE</div></div>
+     <div class="cno">NO. <b>${esc(m.caseNo)||"—"}</b><br>${esc(m.date)}</div></div>
+   <div class="rsec">委託資訊</div>
+   <table class="rt"><tr><th>委託人</th><td>${esc(m.client)||"—"}</td><th>看車地點</th><td>${esc(m.location)||"—"}</td></tr>
+   <tr><th>出售單位</th><td>${esc(m.dealer)||"—"}</td><th>檢查人員</th><td>${esc(m.inspector)||"—"}</td></tr></table>
+   <div class="rsec">車輛資料</div>
+   <table class="rt"><tr><th>廠牌／型號</th><td>${esc(v.make)} ${esc(v.model)}</td><th>出廠年份</th><td>${esc(v.year)||"—"}</td></tr>
+   <tr><th>車身號碼</th><td>${esc(v.vin)||"—"}</td><th>顏色</th><td>${esc(v.color)||"—"}</td></tr>
+   <tr><th>儀表里程</th><td>${v.mileage?Number(v.mileage).toLocaleString()+" km":"—"}</td><th></th><td>（里程為檢查時儀表顯示數字）</td></tr></table>
+   <div class="rsec">總結報告</div>
+   <table class="rt">
+    <tr><th>修復歷史</th><td>${esc(sm.repair)}</td><th>外觀鈑件更換</th><td>${esc(sm.panel)}</td></tr>
+    <tr><th>機能件</th><td>${esc(sm.machine)}</td><th>泡水跡象</th><td>${esc(sm.flood)}</td></tr>
+    <tr><th>外觀表現</th><td>${chip(sm.ext)}</td><th>內裝表現</th><td>${chip(sm.int)}</td></tr>
+    <tr><th>電瓶電壓</th><td>${esc(sm.battery)||"—"} V</td><th>冷氣出風溫度</th><td>${esc(sm.acTemp)||"—"} °C</td></tr>
+    <tr><th>綜合評級</th><td colspan="3" style="padding:3mm"><span class="gchip big">${esc(sm.overall)}</span>
+      <span style="margin-left:6mm;font-size:9.5pt;color:#444">${esc(sm.note)}</span></td></tr></table>
+   <div class="rsec">車體結構 20 點檢查　${structHas?'<span style="color:#ffd9d9;font-weight:400;font-size:8.5pt;margin-left:2mm">（有標記者請參閱說明）</span>':""}</div>
+   <div class="struct-grid">${structCells}</div>
+   <p style="font-size:8pt;color:var(--warn);margin-top:2.5mm">★ 評級不代表車況整體保證；分級定義與聲明請參閱第 5 頁 ★</p>
+   <div class="rfoot"><span>查博士 Dr. Car Check ・ 驗證 ${vcode()}</span><span>P.2 / 5</span></div>
+ </div>`);
+
+ /* P3 details + diagram */
+ const rows=S.defects.map((d,i)=>`<tr><td style="width:10mm;text-align:center;font-family:var(--mono);font-weight:700;color:var(--amber-d)">${i+1}</td>
+   <td>${esc(d.zone)}</td><td class="dmgtype">${esc(d.type)}</td><td style="width:14mm;text-align:center">${esc(d.sev)}</td><td>${esc(d.note)}</td></tr>`).join("");
+ pages.push(`<div class="page">
+   <div class="rp-band"><span>DR. CAR CHECK</span></div>
+   <div class="rp-head">${logoSVG(34,"#16243d","#e8a11f")}
+     <div><div class="ttl">車輛狀態細節</div><div class="sub">CONDITION DETAILS</div></div>
+     <div class="cno">NO. <b>${esc(m.caseNo)||"—"}</b></div></div>
+   <div style="display:grid;grid-template-columns:66mm 1fr;gap:5mm;align-items:start">
+     <div>${carTopSVG()}<p style="text-align:center;font-size:8pt;color:var(--mute);margin-top:1mm">標號對應右表（內裝項目不標示於圖上）</p></div>
+     <div>
+       <div class="rsec" style="margin-top:0">缺失紀錄一覽</div>
+       ${S.defects.length?`<table class="rt"><tr><th style="width:10mm;text-align:center">#</th><th>部位</th><th style="width:22mm">狀況</th><th style="width:14mm">程度</th><th>備註</th></tr>${rows}</table>`
+        :`<p style="font-size:10pt;color:var(--mute);border:1px dashed var(--line);padding:6mm;text-align:center">本次檢查未記錄明顯缺失</p>`}
+       <p style="font-size:8pt;color:var(--mute)">程度定義：極小＝硬幣以內｜小＝名片以內｜中＝A4 以內｜大＝A4 以上。</p>
+     </div>
+   </div>
+   <div class="rfoot"><span>查博士 Dr. Car Check ・ 驗證 ${vcode()}</span><span>P.3 / 5</span></div>
+ </div>`);
+
+ /* P4 photos */
+ const ph=PHOTO_SLOTS.map((cap,i)=>`<div style="border:1px solid #b9c2d0">
+   ${S.photos[i]?`<img src="${S.photos[i]}" style="width:100%;height:52mm;object-fit:cover;display:block">`
+   :`<div style="height:52mm;display:flex;align-items:center;justify-content:center;color:#aab;font-size:9pt;border-bottom:0">未拍攝</div>`}
+   <div style="text-align:center;font-size:9pt;font-weight:700;padding:1.5mm;background:#eef1f6;color:var(--navy)">${cap}</div></div>`).join("");
+ pages.push(`<div class="page">
+   <div class="rp-band"><span>DR. CAR CHECK</span></div>
+   <div class="rp-head">${logoSVG(34,"#16243d","#e8a11f")}
+     <div><div class="ttl">照片紀錄</div><div class="sub">PHOTO RECORD</div></div>
+     <div class="cno">NO. <b>${esc(m.caseNo)||"—"}</b></div></div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">${ph}</div>
+   <div class="rfoot"><span>查博士 Dr. Car Check ・ 驗證 ${vcode()}</span><span>P.4 / 5</span></div>
+ </div>`);
+
+ /* P5 legend + notice + sign */
+ pages.push(`<div class="page">
+   <div class="rp-band"><span>DR. CAR CHECK</span></div>
+   <div class="rp-head">${logoSVG(34,"#16243d","#e8a11f")}
+     <div><div class="ttl">分級說明與聲明</div><div class="sub">GRADING & NOTICE</div></div>
+     <div class="cno">NO. <b>${esc(m.caseNo)||"—"}</b></div></div>
+   <div class="rsec">評級定義（外觀／內裝／綜合通用）</div>
+   <table class="rt legend">
+     <tr><td>S</td><td>車況極佳，無明顯缺失，同年份中少見。</td></tr>
+     <tr><td>A</td><td>狀況良好，僅有極輕微之使用痕跡。</td></tr>
+     <tr><td>B</td><td>有一般使用痕跡或輕微缺失，整體尚可。</td></tr>
+     <tr><td>C</td><td>有明顯缺失，建議購買前確認整修之必要與成本。</td></tr>
+     <tr><td>D</td><td>缺失較多或存在重大疑慮，建議審慎評估。</td></tr></table>
+   <div class="rsec">其他項目定義</div>
+   <table class="rt">
+     <tr><th style="width:30mm">修復歷史</th><td>無＝未見骨架受擊痕跡；輕度＝骨架前端或尾端有受擊痕跡；中度＝骨架部分有受擊痕跡；重度＝車廂座位附近結構有受擊痕跡。依目視與器材偵測判定。</td></tr>
+     <tr><th>機能件</th><td>於靜止狀態發動引擎評估：引擎、變速箱、傳動、排氣聲音、空調、動力方向盤、電動窗等有無明顯異常。</td></tr>
+     <tr><th>電瓶電壓</th><td>發動前約 11.5V 以上為一般參考值；電壓正常不等於電瓶剩餘壽命。</td></tr>
+     <tr><th>冷氣溫度</th><td>出風口約 8°C 以內為佳；數值受環境溫度影響，僅供參考。</td></tr>
+     <tr><th>里程數</th><td>僅登載檢查時儀表顯示之數字，不具保證效力。</td></tr></table>
+   <div class="rsec">重要聲明</div>
+   <ul class="notice">
+     <li>本報告係受託人受委託人委任，就受檢車輛於<b>檢查當時之靜態現況</b>所為之客觀紀錄與專業意見；<b>非車輛品質保證、非保固、非保險，亦非依法令辦理之車輛檢驗</b>。</li>
+     <li>評級係基於檢查當時可見資訊與器材偵測結果；潛伏性瑕疵、需拆解始能發現之問題、及未來使用過程之故障，均不在本報告範圍。</li>
+     <li>本報告僅供<b>委託人本人</b>購車決策參考及留存；未經受託人書面同意，不得提供第三人使用、公開或轉載，亦<b>不得作為買賣契約之擔保內容、對賣方議價施壓之依據或法律訴訟之證據文件</b>。</li>
+     <li>買賣雙方之權利義務，依其買賣契約及中華民國相關法令（如民法買賣瑕疵擔保相關規定、消費者保護法、主管機關公告之中古汽車買賣定型化契約應記載及不得記載事項）定之；本報告不取代、不變更上開法律關係。</li>
+     <li>是否購買、購買條件及價格，均由委託人自行決定並自負其責。受託人責任範圍以雙方簽署之委任合約為準。</li>
+   </ul>
+   <div style="margin-top:5mm;border-top:1px solid #b9c2d0;padding-top:3mm;display:flex;justify-content:space-between;align-items:flex-end">
+     <div style="font-size:9pt;color:var(--mute)">本報告由查博士 Dr. Car Check 出具，僅供委託人參考留存。</div>
+     <div style="text-align:right;font-size:9.5pt"><span style="color:var(--mute)">鑑定人員</span>　<b style="color:var(--navy)" id="rpInspector"></b></div>
+   </div>
+   <div class="rfoot"><span>LINE ${C.line}　TEL ${C.tel}　${C.web}</span><span>P.5 / 5</span></div>
+ </div>`);
+
+ document.getElementById("report").innerHTML=pages.join("");
+ const rpI=document.getElementById("rpInspector");if(rpI)rpI.textContent=S.meta.inspector||"—";
+}
+
+/* ---------- preview / print ---------- */
+document.getElementById("btnPreview").onclick=()=>{renderReport();document.body.classList.add("preview");fitPages();window.scrollTo(0,0)};
+document.getElementById("pvBack").onclick=()=>{document.body.classList.remove("preview")};
+document.getElementById("pvPrint").onclick=()=>window.print();
+function fitPages(){const w=Math.min(window.innerWidth-16,794);const z=w/794;
+ document.querySelectorAll(".page").forEach(p=>{p.style.transform=z<1?`scale(${z})`:"";p.style.transformOrigin="top left";
+  p.style.marginBottom=z<1?`${18-1123*(1-z)}px`:"18px"})}
+window.addEventListener("resize",()=>{if(document.body.classList.contains("preview"))fitPages()});
+
+/* ---------- init ---------- */
+function refreshAll(){bindInputs();buildSegs();buildStruct();paintDefects();buildPhotos()}
+load();
+if(!S.meta.caseNo){const d=new Date();S.meta.caseNo=`DCC-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}-01`}
+buildZoneSelect();refreshAll();
+<\/script>
+</body>
+</html>
+
+</script>
+<style>
+  #dccToolOverlay{position:fixed;inset:0;z-index:99999;background:#eef0f4;display:none}
+  #dccToolOverlay.show{display:block}
+  #dccToolFrame{width:100%;height:100%;border:0;display:block}
+  #dccToolClose{position:fixed;top:10px;right:12px;z-index:100000;background:#16243d;color:#fff;border:none;
+    border-radius:10px;padding:9px 14px;font-size:13px;font-family:"Noto Sans TC",sans-serif;cursor:pointer;
+    box-shadow:0 2px 10px rgba(0,0,0,.3);display:none}
+  #dccToolClose.show{display:block}
+</style>
+<button id="dccToolClose">✕ 關閉工具</button>
+<div id="dccToolOverlay"><iframe id="dccToolFrame" title="查博士鑑定工具"></iframe></div>
+<script>
+(function(){
+  /* ============================================================
+     【密碼設定】要改密碼，只改下面這一行引號裡的字即可。
+     注意：前端密碼僅防「誤闖與外行人」，無法防止懂技術者檢視原始碼。
+     真正防偽請依賴報告上的「防偽驗證碼 + 官方LINE核對」機制。
+     ============================================================ */
+  const MY_PASSWORD = "DrCar2026";
+
+  var tapCount=0, tapTimer=null, loaded=false;
+  var overlay=document.getElementById("dccToolOverlay");
+  var frame=document.getElementById("dccToolFrame");
+  var closeBtn=document.getElementById("dccToolClose");
+
+  function openTool(){
+    if(!loaded){
+      var src=document.getElementById("dccToolSource").textContent;
+      frame.srcdoc=src; loaded=true;
+    }
+    overlay.classList.add("show");
+    closeBtn.classList.add("show");
+    document.body.style.overflow="hidden";
+  }
+  function closeTool(){
+    overlay.classList.remove("show");
+    closeBtn.classList.remove("show");
+    document.body.style.overflow="";
+  }
+  closeBtn.addEventListener("click", closeTool);
+
+  function wireTrigger(){
+    var trig=document.getElementById("dccSecretTrigger");
+    if(!trig) return;
+    trig.addEventListener("click", function(){
+      tapCount++;
+      clearTimeout(tapTimer);
+      tapTimer=setTimeout(function(){ tapCount=0; }, 1200);
+      if(tapCount>=5){
+        tapCount=0;
+        var pw=prompt("請輸入管理密碼：");
+        if(pw===null) return;
+        if(pw===MY_PASSWORD){ openTool(); }
+      }
+    });
+  }
+  if(document.readyState!=="loading") wireTrigger();
+  else document.addEventListener("DOMContentLoaded", wireTrigger);
+})();
+</script>
 </body>
 </html>
