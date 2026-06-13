@@ -1539,11 +1539,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .f{margin-bottom:12px}
 .f label{display:block;font-size:12.5px;color:var(--mute);margin-bottom:5px;font-weight:500}
 .f input[type=text],.f input[type=number],.f input[type=date],.f select,.f textarea{
-  width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:15px;font-family:var(--sans);background:#fff;color:var(--ink)}
+  width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:16px;font-family:var(--sans);background:#fff;color:var(--ink)}
 .f textarea{min-height:64px;resize:vertical}
 .f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:430px){.grid2{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;font-size:14px;font-family:var(--sans);cursor:pointer;color:var(--ink);min-width:46px}
 .seg button.on{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
@@ -1556,7 +1555,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .sw button{border:none;background:#fff;padding:7px 13px;font-size:13px;cursor:pointer;font-family:var(--sans)}
 .sw button.no.on{background:var(--ok);color:#fff;font-weight:700}
 .sw button.yes.on{background:var(--warn);color:#fff;font-weight:700}
-.struct-note{width:100%;margin-top:6px;border:1px solid var(--warn);border-radius:8px;padding:8px 10px;font-size:13.5px;font-family:var(--sans)}
+.struct-note{width:100%;margin-top:6px;border:1px solid var(--warn);border-radius:8px;padding:8px 10px;font-size:16px;font-family:var(--sans)}
 .dlist{margin-top:8px}
 .drow{display:flex;align-items:flex-start;gap:8px;background:#f7f8fa;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
 .drow .no{font-family:var(--mono);font-weight:700;color:var(--amber-d);flex-shrink:0}
@@ -1910,7 +1909,6 @@ document.getElementById("btnClear").onclick=()=>{if(confirm("確定清除全部�
 
 /* ---------- report render ---------- */
 const C={line:"https://lin.ee/NIq2ZG5",tel:"0979-356-137",web:"dr-car-check.tw"};
-/* 防偽：每份報告產生唯一驗證碼，並請收件人以官方LINE回傳核對 */
 function vcode(){const m=(S.meta.caseNo||"")+"|"+(S.vehicle.vin||"")+"|"+(S.meta.date||"");let h=5381;for(let i=0;i<m.length;i++){h=((h<<5)+h+m.charCodeAt(i))>>>0;}return ("DCV-"+h.toString(36).toUpperCase()).slice(0,12);}
 function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function logoSVG(size,navy,amber){return`<svg width="${size}" height="${size}" viewBox="0 0 100 100"><circle cx="44" cy="42" r="30" fill="none" stroke="${navy}" stroke-width="6"/><rect x="66" y="62" width="26" height="11" rx="5" transform="rotate(45 66 62)" fill="${navy}"/><path d="M26 50 q2 -10 10 -12 l5 -7 q3 -4 9 -4 h8 q6 0 9 4 l4 6 q8 2 9 13 l-1 4 h-6 a6 6 0 0 0 -12 0 h-16 a6 6 0 0 0 -12 0 h-6 z" fill="none" stroke="${amber}" stroke-width="4.5" stroke-linejoin="round"/></svg>`}
@@ -2101,6 +2099,7 @@ buildZoneSelect();refreshAll();
   function openTool(){
     if(!loaded){
       var src=document.getElementById("dccToolSource").textContent;
+      src=src.replace(/<\\\/script>/g,"<\/script>");
       frame.srcdoc=src; loaded=true;
     }
     overlay.classList.add("show");
