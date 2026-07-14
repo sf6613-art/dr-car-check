@@ -1575,6 +1575,19 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1
 .pslot.has{border-style:solid;border-color:var(--amber)}
 .pslot .rm{position:absolute;top:6px;right:6px;background:rgba(22,36,61,.85);color:#fff;border:none;border-radius:8px;font-size:11px;padding:4px 8px;cursor:pointer;display:none}
 .pslot.has .rm{display:block}
+.pslot .ed{position:absolute;top:6px;right:52px;background:rgba(232,161,31,.95);color:#16243d;border:none;border-radius:8px;font-size:11px;font-weight:700;padding:4px 8px;cursor:pointer;display:none}
+.pslot.has .ed{display:block}
+#cropModal{position:fixed;inset:0;background:rgba(10,15,25,.9);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+#cropModal.on{display:flex}
+#cropModal .ctitle{color:#fff;font-weight:700;margin-bottom:10px;font-size:15px}
+#cropStage{position:relative;width:min(92vw,520px);aspect-ratio:4/3;background:#000;overflow:hidden;border-radius:12px;touch-action:none}
+#cropStage canvas{position:absolute;inset:0;width:100%;height:100%}
+#cropCtrls{width:min(92vw,520px);margin-top:12px;background:#fff;border-radius:12px;padding:14px}
+#cropCtrls label{display:block;font-size:12.5px;color:var(--mute);margin-bottom:6px;font-weight:500}
+#cropCtrls input[type=range]{width:100%;margin-bottom:10px}
+#cropBtns{display:flex;gap:10px;margin-top:4px}
+#cropBtns .btn{flex:1;padding:12px}
+.crophint{font-size:12px;color:var(--mute);margin-bottom:10px;line-height:1.5}
 .bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:60}
 .bottombar .btn{flex:1;padding:13px 10px}
 .hint{font-size:12px;color:var(--mute);margin-top:6px;line-height:1.5}
@@ -1649,14 +1662,21 @@ td.dmgtype{color:var(--warn);font-weight:700}
   body.preview{background:#fff!important}
   body.preview #report{padding:0!important;margin:0!important;transform:none!important}
   /* 關鍵：清除手機預覽時加上的縮放，否則 iOS 列印會把內容縮到左上角 */
-  .page{box-shadow:none!important;margin:0!important;width:210mm!important;height:297mm!important;min-height:297mm!important;
-    overflow:hidden!important;padding:12mm 13mm!important;
-    transform:none!important;-webkit-transform:none!important;transform-origin:top left!important;
+  .page{box-shadow:none!important;margin:0!important;width:auto!important;height:auto!important;min-height:0!important;
+    overflow:visible!important;padding:0!important;
+    transform:none!important;-webkit-transform:none!important;
     page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid;
     -webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   .page:last-child{page-break-after:auto;break-after:auto}
+  .rp-band{margin:0 0 4mm 0!important}
+  .cover .band2{width:100%!important;margin:0 0 4mm 0!important}
+  .rfoot{position:static!important;left:auto;right:auto;bottom:auto;margin-top:6mm!important}
+  .cover{min-height:0!important}
+  .cover .logo{margin:12mm 0 6mm!important}
+  .cover .meta{margin-top:8mm!important}
+  .cover .contact{margin-top:12mm!important}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  @page{size:A4;margin:0}
+  @page{size:A4;margin:10mm}
 }
 </style>
 </head>
@@ -1747,6 +1767,15 @@ td.dmgtype{color:var(--warn);font-weight:700}
       </div>
       <button class="btn amber full" id="dAdd">＋ 加入缺失</button>
     </div>
+    <div class="card"><h3>胎紋深度（mm）</h3>
+      <div class="grid2">
+        <div class="f"><label>左前輪</label><input type="text" id="treadFL" placeholder="7.0"></div>
+        <div class="f"><label>右前輪</label><input type="text" id="treadFR" placeholder="7.0"></div>
+        <div class="f"><label>左後輪</label><input type="text" id="treadRL" placeholder="7.0"></div>
+        <div class="f"><label>右後輪</label><input type="text" id="treadRR" placeholder="7.0"></div>
+      </div>
+      <p class="hint">新胎約 7–8mm；低於 1.6mm 為法定磨耗極限，建議更換。留白則報告不顯示該輪。</p>
+    </div>
     <div class="card"><h3>已記錄 <span id="dCount" style="color:var(--amber-d)"></span></h3>
       <div class="dlist" id="dList"><p class="hint">尚無紀錄。</p></div>
     </div>
@@ -1756,7 +1785,7 @@ td.dmgtype{color:var(--warn);font-weight:700}
   <section class="sec" id="s5">
     <div class="card"><h3>照片紀錄（點格子拍照或選圖）</h3>
       <div class="photo-grid" id="photoGrid"></div>
-      <p class="hint">照片會自動壓縮。車牌與 VIN 請於拍攝時避開，或事後自行處理。</p>
+      <p class="hint">選好照片後會自動開啟裁切器：可縮放、拖曳、裁掉頭尾。之後按格子右上「調整」可重新裁切。輸出統一為 4:3。</p>
     </div>
   </section>
 
@@ -1784,6 +1813,22 @@ td.dmgtype{color:var(--warn);font-weight:700}
 </div>
 
 <!-- ======================= REPORT ======================= -->
+<div id="cropModal">
+  <div class="ctitle" id="cropTitle">調整照片</div>
+  <div id="cropStage"><canvas id="cropCanvas"></canvas></div>
+  <div id="cropCtrls">
+    <p class="crophint">拖曳移動位置｜滑桿縮放｜可裁掉頭尾多餘部分</p>
+    <label>縮放</label>
+    <input type="range" id="cropZoom" min="100" max="400" value="100">
+    <label>旋轉</label>
+    <input type="range" id="cropRot" min="-15" max="15" value="0">
+    <div id="cropBtns">
+      <button class="btn ghost" id="cropCancel">取消</button>
+      <button class="btn ghost" id="cropReset">重設</button>
+      <button class="btn amber" id="cropOK">套用</button>
+    </div>
+  </div>
+</div>
 <div id="report"></div>
 
 <script>
@@ -1805,7 +1850,7 @@ function fresh(){return{
  vehicle:{make:"",model:"",year:"",color:"",vin:"",mileage:""},
  summary:{repair:"無",panel:"無",machine:"正常",flood:"無",battery:"",acTemp:"",ext:"A",int:"A",overall:"A",note:""},
  structure:STRUCT.map(()=>({v:"無",note:""})),
- defects:[],photos:{}}}
+ defects:[],photos:{},src:{},tread:{FL:"",FR:"",RL:"",RR:""}}}
 let S=fresh();
 function save(){try{localStorage.setItem("dcc_record",JSON.stringify(S));sd("已自動儲存")}catch(e){sd("⚠ 容量滿，請匯出JSON")}}
 function load(){try{const r=localStorage.getItem("dcc_record");if(r){S=Object.assign(fresh(),JSON.parse(r));S.structure=S.structure&&S.structure.length===20?S.structure:fresh().structure}}catch(e){}}
@@ -1822,8 +1867,10 @@ document.getElementById("bbNext").onclick=()=>showSec(Math.min(5,cur+1));
 /* ---------- text inputs ---------- */
 const MAP={caseNo:["meta","caseNo"],date:["meta","date"],inspector:["meta","inspector"],location:["meta","location"],client:["meta","client"],dealer:["meta","dealer"],
  make:["vehicle","make"],model:["vehicle","model"],year:["vehicle","year"],color:["vehicle","color"],vin:["vehicle","vin"],mileage:["vehicle","mileage"],
- battery:["summary","battery"],acTemp:["summary","acTemp"],summaryNote:["summary","note"]};
-function bindInputs(){for(const id in MAP){const el=document.getElementById(id);const[a,b]=MAP[id];
+ battery:["summary","battery"],acTemp:["summary","acTemp"],summaryNote:["summary","note"],
+ treadFL:["tread","FL"],treadFR:["tread","FR"],treadRL:["tread","RL"],treadRR:["tread","RR"]};
+function bindInputs(){for(const id in MAP){const el=document.getElementById(id);if(!el)continue;const[a,b]=MAP[id];
+ if(!S[a])S[a]={};
  el.value=S[a][b]||"";el.addEventListener("input",()=>{S[a][b]=el.value;save()})}}
 
 /* ---------- segmented ---------- */
@@ -1877,35 +1924,108 @@ function renderSlot(slot,box,rm,i,cap){
   if(S.photos[i]){slot.classList.add("has");box.style.backgroundImage=`url(${S.photos[i]})`;box.textContent="";rm.style.display="block"}
   else{slot.classList.remove("has");box.style.backgroundImage="";box.textContent="＋ 拍照／選圖";rm.style.display="none"}
 }
+/* ---- 照片裁切編輯器 ---- */
+const CROP_W=1000, CROP_H=750; // 4:3 輸出
+let cropState=null;
+function openCrop(idx,srcData,onDone){
+  const modal=document.getElementById("cropModal");
+  const cv=document.getElementById("cropCanvas");
+  const zoom=document.getElementById("cropZoom");
+  const rot=document.getElementById("cropRot");
+  document.getElementById("cropTitle").textContent="調整照片 － "+PHOTO_SLOTS[idx];
+  const img=new Image();
+  img.onload=()=>{
+    cv.width=CROP_W;cv.height=CROP_H;
+    const base=Math.max(CROP_W/img.width, CROP_H/img.height); // cover
+    cropState={img,scale:1,rot:0,tx:0,ty:0,base,idx,onDone};
+    zoom.value=100;rot.value=0;
+    draw();modal.classList.add("on");
+  };
+  img.onerror=()=>alert("圖片載入失敗");
+  img.src=srcData;
+}
+function draw(){
+  if(!cropState)return;
+  const {img,scale,rot,tx,ty,base}=cropState;
+  const cv=document.getElementById("cropCanvas");
+  const ctx=cv.getContext("2d");
+  ctx.fillStyle="#000";ctx.fillRect(0,0,CROP_W,CROP_H);
+  ctx.save();
+  ctx.translate(CROP_W/2+tx, CROP_H/2+ty);
+  ctx.rotate(rot*Math.PI/180);
+  const s=base*scale;
+  ctx.drawImage(img, -img.width*s/2, -img.height*s/2, img.width*s, img.height*s);
+  ctx.restore();
+}
+(function wireCrop(){
+  const modal=document.getElementById("cropModal");
+  const stage=document.getElementById("cropStage");
+  const zoom=document.getElementById("cropZoom");
+  const rot=document.getElementById("cropRot");
+  zoom.addEventListener("input",()=>{if(!cropState)return;cropState.scale=zoom.value/100;draw()});
+  rot.addEventListener("input",()=>{if(!cropState)return;cropState.rot=+rot.value;draw()});
+  let drag=false,lx=0,ly=0;
+  const pt=e=>e.touches?e.touches[0]:e;
+  const start=e=>{if(!cropState)return;drag=true;const p=pt(e);lx=p.clientX;ly=p.clientY;e.preventDefault()};
+  const move=e=>{if(!drag||!cropState)return;const p=pt(e);
+    const r=stage.getBoundingClientRect();const k=CROP_W/r.width;
+    cropState.tx+=(p.clientX-lx)*k;cropState.ty+=(p.clientY-ly)*k;
+    lx=p.clientX;ly=p.clientY;draw();e.preventDefault()};
+  const end=()=>{drag=false};
+  stage.addEventListener("mousedown",start);window.addEventListener("mousemove",move);window.addEventListener("mouseup",end);
+  stage.addEventListener("touchstart",start,{passive:false});stage.addEventListener("touchmove",move,{passive:false});stage.addEventListener("touchend",end);
+  document.getElementById("cropReset").onclick=()=>{if(!cropState)return;cropState.scale=1;cropState.rot=0;cropState.tx=0;cropState.ty=0;zoom.value=100;rot.value=0;draw()};
+  document.getElementById("cropCancel").onclick=()=>{modal.classList.remove("on");cropState=null};
+  document.getElementById("cropOK").onclick=()=>{
+    if(!cropState)return;
+    const data=document.getElementById("cropCanvas").toDataURL("image/jpeg",.75);
+    const cb=cropState.onDone;const i=cropState.idx;
+    modal.classList.remove("on");cropState=null;
+    cb(i,data);
+  };
+})();
 function buildPhotos(){const g=document.getElementById("photoGrid");g.innerHTML="";
+ if(!S.src)S.src={};
  PHOTO_SLOTS.forEach((cap,i)=>{const slot=document.createElement("div");slot.className="pslot";
   slot.innerHTML=`<div class="cap">${i+1}. ${cap}</div>`;
   const box=document.createElement("div");box.className="box";
   const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.style.display="none";
   const rm=document.createElement("button");rm.className="rm";rm.textContent="移除";
+  const ed=document.createElement("button");ed.className="ed";ed.textContent="調整";
+  const commit=(idx,data)=>{S.photos[idx]=data;renderSlot(slot,box,rm,idx,cap);
+    try{save()}catch(e){alert("儲存空間已滿，請先到『輸出』匯出備份。")}};
   box.onclick=()=>inp.click();
   inp.onchange=()=>{const f=inp.files&&inp.files[0];if(!f)return;
     box.textContent="處理中…";box.style.backgroundImage="";
     const reader=new FileReader();
-    reader.onerror=()=>{box.textContent="讀取失敗，再試一次";};
-    reader.onload=()=>{const img=new Image();
-      img.onerror=()=>{box.textContent="圖片格式不支援";};
-      img.onload=()=>{try{
-        const c=document.createElement("canvas");const M=1100;let w0=img.naturalWidth||img.width,h0=img.naturalHeight||img.height;
+    reader.onerror=()=>{box.textContent="讀取失敗，再試一次"};
+    reader.onload=()=>{
+      // 先縮小原圖存起來（供之後重新裁切），再開啟裁切器
+      const img=new Image();
+      img.onerror=()=>{box.textContent="圖片格式不支援"};
+      img.onload=()=>{
+        const c=document.createElement("canvas");const M=1400;
+        let w0=img.naturalWidth||img.width,h0=img.naturalHeight||img.height;
         if(!w0||!h0){box.textContent="圖片讀取異常";return}
         if(w0>M){h0=Math.round(h0*M/w0);w0=M}
         c.width=w0;c.height=h0;c.getContext("2d").drawImage(img,0,0,w0,h0);
-        const data=c.toDataURL("image/jpeg",.72);
-        S.photos[i]=data;renderSlot(slot,box,rm,i,cap);
-        try{save()}catch(e){alert("照片較多，手機儲存空間已滿。建議先到『輸出』匯出報告或JSON備份。")}
+        const srcData=c.toDataURL("image/jpeg",.8);
+        S.src[i]=srcData;
+        renderSlot(slot,box,rm,i,cap);
+        openCrop(i,srcData,commit);
         inp.value="";
-      }catch(err){box.textContent="處理失敗，請重試"}};
-      img.src=reader.result; // data URL — iOS reliable
+      };
+      img.src=reader.result;
     };
     reader.readAsDataURL(f);
   };
-  rm.onclick=e=>{e.stopPropagation();delete S.photos[i];renderSlot(slot,box,rm,i,cap);save()};
-  slot.append(box,inp,rm);renderSlot(slot,box,rm,i,cap);g.appendChild(slot)})}
+  ed.onclick=e=>{e.stopPropagation();
+    const src=(S.src&&S.src[i])||S.photos[i];
+    if(!src){alert("請先選擇照片");return}
+    openCrop(i,src,commit);
+  };
+  rm.onclick=e=>{e.stopPropagation();delete S.photos[i];if(S.src)delete S.src[i];renderSlot(slot,box,rm,i,cap);save()};
+  slot.append(box,inp,rm,ed);renderSlot(slot,box,rm,i,cap);g.appendChild(slot)})}
 
 /* ---------- export / import / clear ---------- */
 document.getElementById("btnExport").onclick=()=>{
@@ -2003,6 +2123,12 @@ function renderReport(){
        ${S.defects.length?`<table class="rt"><tr><th style="width:10mm;text-align:center">#</th><th>部位</th><th style="width:22mm">狀況</th><th style="width:14mm">程度</th><th>備註</th></tr>${rows}</table>`
         :`<p style="font-size:10pt;color:var(--mute);border:1px dashed var(--line);padding:6mm;text-align:center">本次檢查未記錄明顯缺失</p>`}
        <p style="font-size:8pt;color:var(--mute)">程度定義：極小＝硬幣以內｜小＝名片以內｜中＝A4 以內｜大＝A4 以上。</p>
+       ${(function(){const t=S.tread||{};const any=t.FL||t.FR||t.RL||t.RR;if(!any)return "";
+         const cell=v=>v?`${esc(v)} mm`:"—";
+         return `<div class="rsec">胎紋深度</div>
+         <table class="rt"><tr><th style="width:24mm">左前輪</th><td>${cell(t.FL)}</td><th style="width:24mm">右前輪</th><td>${cell(t.FR)}</td></tr>
+         <tr><th>左後輪</th><td>${cell(t.RL)}</td><th>右後輪</th><td>${cell(t.RR)}</td></tr></table>
+         <p style="font-size:8pt;color:var(--mute)">新胎約 7–8mm；法定磨耗極限為 1.6mm。數值為檢查當時量測結果。</p>`;})()}
      </div>
    </div>
    <div class="rfoot"><span>查博士 Dr. Car Check ・ 驗證 ${vcode()}</span><span>P.3 / 5</span></div>
