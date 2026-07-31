@@ -2077,7 +2077,6 @@ function renderReport(){
      <div><span>報告編號</span><span>${esc(m.caseNo)||"—"}</span></div>
      <div><span>檢查日期</span><span>${esc(m.date)||"—"}</span></div>
      <div><span>受檢車輛</span><span>${esc(v.make)} ${esc(v.model)}</span></div>
-     <div><span>報告效期</span><span>鑑定日起 90 日內，且里程增加未逾 50 公里</span></div>
    </div>
    <div class="contact">LINE ${C.line}　｜　TEL ${C.tel}　｜　${C.web}<br>本報告為檢查當時現況之客觀紀錄，非保固、非保證，詳閱末頁聲明。<br>防偽驗證碼 <b>${vcode()}</b>　（如有疑慮，請以官方LINE回傳此碼核對真偽）</div>
  </div>`);
